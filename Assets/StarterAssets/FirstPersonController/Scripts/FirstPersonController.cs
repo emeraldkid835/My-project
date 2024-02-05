@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 #endif
 
 namespace StarterAssets
@@ -22,6 +23,7 @@ namespace StarterAssets
 		public float RotationSpeed = 1.0f;
 		[Tooltip("Acceleration and deceleration")]
 		public float SpeedChangeRate = 10.0f;
+		
 
 		[Space(10)]
 		[Tooltip("The height the player can jump")]
@@ -66,7 +68,16 @@ namespace StarterAssets
 		// timeout deltatime
 		private float _jumpTimeoutDelta;
 		private float _fallTimeoutDelta;
-
+		[SerializeField]
+		private Vector3 respawnPoint;
+		[SerializeField]
+		private Quaternion respawnRotation;
+		[SerializeField]
+		private float _score = 0;
+		[SerializeField]
+		private Text Score;
+		[SerializeField]
+		private GrapScript _GrabZone;
 	
 #if ENABLE_INPUT_SYSTEM
 		private PlayerInput _playerInput;
@@ -92,6 +103,11 @@ namespace StarterAssets
 		private void Awake()
 		{
 			canJump = false;
+			respawnPoint = transform.position;
+			if (Score != null)
+			{
+				Score.text = _score.ToString();
+			}
 			// get a reference to our main camera
 			if (_mainCamera == null)
 			{
@@ -142,6 +158,7 @@ namespace StarterAssets
 				float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 				
 				_cinemachineTargetPitch += _input.look.y * RotationSpeed * deltaTimeMultiplier;
+
 				_rotationVelocity = _input.look.x * RotationSpeed * deltaTimeMultiplier;
 
 				// clamp our pitch rotation
@@ -248,6 +265,10 @@ namespace StarterAssets
 			{
 				_verticalVelocity += Gravity * Time.deltaTime;
 			}
+			if (canJump == false)
+			{
+				_input.jump = false;
+			}
 		}
 
 		private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
@@ -268,14 +289,39 @@ namespace StarterAssets
 			// when selected, draw a gizmo in the position of, and matching radius of, the grounded collider
 			Gizmos.DrawSphere(new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z), GroundedRadius);
 		}
+		private void Respawn()
+		{
+			this.GetComponent<CharacterController>().enabled = false;
+			transform.position = respawnPoint;
+			transform.rotation = respawnRotation;
+			this.GetComponent<CharacterController>().enabled = true;
+			_score -= 1;
+			UpdateScore();
+		}
 		private void OnTriggerEnter(Collider other)
 		{
 			if (other.gameObject.tag == "JumpPowerUp")
 			{
-				Debug.Log("Test");
 				canJump = true;
 				Destroy(other.gameObject);
 			}
+			else if (other.gameObject.tag == "Checkpoint")
+			{
+				respawnPoint = other.transform.position;
+				respawnRotation = other.transform.rotation;
+			}
+			else if (other.gameObject.tag == "Deathzone")
+			{
+				Respawn();
+			}
+		}
+		private void UpdateScore()
+		{
+			Score.text = _score.ToString();
+		}
+		public void OnGrab()
+		{
+			_GrabZone.Grab();
 		}
 	}
 }

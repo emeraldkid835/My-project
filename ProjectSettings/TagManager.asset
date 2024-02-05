@@ -6,6 +6,9 @@ TagManager:
   tags:
   - CinemachineTarget
   - JumpPowerUp
+  - Checkpoint
+  - Deathzone
+  - Grabbable
   layers:
   - Default
   - TransparentFX

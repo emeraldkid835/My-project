@@ -2,6 +2,7 @@
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
 #endif
 
 namespace StarterAssets
@@ -75,7 +76,7 @@ namespace StarterAssets
 		[SerializeField]
 		private float _score = 0;
 		[SerializeField]
-		private Text Score;
+		public TextMeshProUGUI Score;
 		[SerializeField]
 		private GrapScript _GrabZone;
 	

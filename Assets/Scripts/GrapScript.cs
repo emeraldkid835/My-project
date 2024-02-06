@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using TMPro;
 
 public class GrapScript : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class GrapScript : MonoBehaviour
     private GameObject _GrabbedObject;
     [SerializeField]
     private bool grabbed = false;
+    [SerializeField]
+	public TextMeshProUGUI UI;
 
 
     private void start()
@@ -41,6 +44,7 @@ public class GrapScript : MonoBehaviour
        if (other.gameObject.tag == "Grabbable")
         {
             _GrabbedObject = other.gameObject;
+            UI.text = "E";
         } 
     }
     
@@ -49,6 +53,7 @@ public class GrapScript : MonoBehaviour
         if (other.gameObject == _GrabbedObject)
         {
             _GrabbedObject = null;
+            UI.text = "";
         }
     }
     public void Grab()

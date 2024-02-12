@@ -7,6 +7,8 @@ using TMPro;
 public class GrapScript : MonoBehaviour
 {
     [SerializeField]
+    private GameObject _Player;
+    [SerializeField]
     private GameObject _GrabbedObject;
     [SerializeField]
     private bool grabbed = false;
@@ -14,8 +16,10 @@ public class GrapScript : MonoBehaviour
 	public TextMeshProUGUI UI;
 
 
+
     private void start()
     {
+        UI.text = "";
     }
 
     private void FixedUpdate()
@@ -24,13 +28,21 @@ public class GrapScript : MonoBehaviour
         {
             if (grabbed == true)
             {
-            _GrabbedObject.transform.position = this.transform.position;
-            _GrabbedObject.transform.rotation = this.transform.rotation;
-            _GrabbedObject.GetComponent<Rigidbody>().useGravity = false;
+                if (_GrabbedObject.GetComponent<BoxScript>()._Respawning == true)
+                {
+                    Debug.Log("Box Respawned");
+                    grabbed = false;
+                    _GrabbedObject.GetComponent<BoxScript>().RespawnBox();
+                }
+                _GrabbedObject.transform.position = this.transform.position;
+                _GrabbedObject.transform.rotation = this.transform.rotation;
+                _GrabbedObject.GetComponent<Rigidbody>().useGravity = false;
+                Physics.IgnoreCollision(_GrabbedObject.GetComponent<BoxCollider>(), _Player.GetComponent<Collider>(),true);
             }
             else
             {
                 _GrabbedObject.GetComponent<Rigidbody>().useGravity = true;
+                Physics.IgnoreCollision(_GrabbedObject.GetComponent<Collider>(), _Player.GetComponent<Collider>(),false);
             }
         }
         else
@@ -41,24 +53,29 @@ public class GrapScript : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-       if (other.gameObject.tag == "Grabbable")
+        if (grabbed == false)
         {
-            _GrabbedObject = other.gameObject;
-            UI.text = "E";
-        } 
+            if (other.gameObject.tag == "Grabbable")
+            {
+                _GrabbedObject = other.gameObject;
+                UI.text = "E";
+            } 
+        }
     }
     
     void OnTriggerExit(Collider other)
     {
-        if (other.gameObject == _GrabbedObject)
+        if (grabbed == false)
         {
-            _GrabbedObject = null;
-            UI.text = "";
+            if (other.gameObject == _GrabbedObject)
+            {
+                _GrabbedObject = null;
+                UI.text = "";
+            }
         }
     }
     public void Grab()
     {
-        Debug.Log("Test");
         grabbed = !grabbed;
     }
 }

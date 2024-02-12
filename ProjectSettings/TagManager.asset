@@ -9,6 +9,7 @@ TagManager:
   - Checkpoint
   - Deathzone
   - Grabbable
+  - ExitDeathzone
   layers:
   - Default
   - TransparentFX

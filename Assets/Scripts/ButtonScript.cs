@@ -15,10 +15,12 @@ public class ButtonScript : MonoBehaviour
     [SerializeField]
     private bool _Toggle = true;
     private Vector3 startPosition;
+    private Vector3 buttonStartPosition;
 
     private void Start()
     {
         startPosition = _Door.transform.position;
+        buttonStartPosition = this.transform.position;
     }
 
 
